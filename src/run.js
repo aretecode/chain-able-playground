@@ -6,6 +6,7 @@ const React = require('react')
 const MobXReact = require('mobx-react')
 const Chainable = require('chain-able/dists/dev')
 const ChainableDecorators = require('chain-able/src/compose/decorators')
+const log = require('./fliplog')
 
 window.Chainable = window.Chain = Chainable
 window.ChainableDecorators = ChainableDecorators
@@ -76,6 +77,8 @@ export function runCode(store, render) {
         return MobX
       case 'mobx-state-tree-playground':
         return {inspect: sandboxInspect, render}
+      case 'fliplog':
+        return log
       case 'react':
         return React
       // @TODO:

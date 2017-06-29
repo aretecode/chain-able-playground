@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import MonacoEditor from 'react-monaco-editor'
 import {observer} from 'mobx-react'
 import {runCode} from './run'
+import log from './fliplog'
 
 class App extends Component {
   editor = null
@@ -62,11 +63,12 @@ class App extends Component {
 
   render() {
     const {store} = this.props
+    this.runner = () => runCode(store, this.sandboxRender)
     return (
       <div className="playground">
         <div className="toolbar">
           <div className="buttons run-code">
-            <button onClick={() => runCode(store, this.sandboxRender)}>
+            <button onClick={() => this.runner()}>
               Run ►
             </button>
             <button onClick={() => (window.location.hash = store.shareUrl)}>
@@ -98,31 +100,33 @@ class App extends Component {
             : null}
           <div className="buttons preview-mode">
             <button
-              className={store.previewMode === 'react' ? 'active' : ''}
-              onClick={() => store.setPreviewMode('react')}
+              className={store.previewMode === 'observe' ? 'active' : ''}
+              onClick={() => store.showExample('observe')}
             >
-              Put
+              Observe
               {/* Preview */}
             </button>
             <button
-              className={store.previewMode === 'snapshots' ? 'active' : ''}
-              onClick={() => store.setPreviewMode('snapshots')}
+              className={store.previewMode === 'schema' ? 'active' : ''}
+              onClick={() => store.showExample('schema')}
             >
-              Examples
+              Schema
               {/* Snapshots */}
             </button>
+
             <button
               className={store.previewMode === 'patches' ? 'active' : ''}
-              onClick={() => store.setPreviewMode('patches')}
+              onClick={() => store.showExample('merge') && this.runner()}
             >
-              Here
+              Merge
               {/* Patches */}
             </button>
+
             <button
               className={store.previewMode === 'actions' ? 'active' : ''}
-              onClick={() => store.setPreviewMode('actions')}
+              onClick={() => store.showExample('ls') && this.runner()}
             >
-              Dropdown
+              LocalStorage
               {/* Actions */}
             </button>
           </div>

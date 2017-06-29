@@ -66,8 +66,7 @@ const str = obj => JSON.stringify(obj, null, 2)
 
 const log = obj => console.log(str(obj), '${NEWLINE}')
 `
-
-let DEFAULT_CODE = `
+let MERGE_CODE = `
 const Chainable = require('chain-able')
 
 ${log}
@@ -84,6 +83,7 @@ chain.merge({
 })
 
 `
+let DEFAULT_CODE = MERGE_CODE
 
 // @TODO make editor compile this grr
 const DECORATOR_CODE = `
@@ -164,6 +164,70 @@ commentChain.setName(['? is optional :-)'])
 
 DEFAULT_CODE = SCHEMA_CODE
 
+let LS_CODE = `
+// just a mock for node
+const store = {}
+const storage = {
+  getItem: key => store[key],
+  setItem: (key, value) => (store[key] = value),
+}
+const ls = {
+  get: key => JSON.parse(storage.getItem(key)),
+  set: (key, value) => storage.setItem(key, JSON.stringify(value)),
+}
+
+// important code
+const {Chain, eq} = require('chain-able')
+
+class Canada extends Chain {
+  constructor(parent) {
+    super(parent)
+    this.extend(['eh'])
+  }
+}
+
+const canada = new Canada()
+  .eh('eh!')
+  .merge({canada: true})
+  .tap('canada', value => '🇨🇦')
+  .setIfEmpty('ooo', 'ahh')
+
+ls.set('canada', canada.entries())
+const hydrated = new Canada().from(ls.get('canada'))
+
+const hydratedIsTheSame = eq(canada.entries(), hydrated.entries())
+console.log(hydratedIsTheSame)
+`
+
+let OBSERVE_CODE = `
+const {compose, Chain} = require('chain-able')
+
+class Winning {}
+class Yes extends compose(Winning) {
+  get winning() {
+    return true
+  }
+}
+const yes = new Yes()
+console.log('winning?', yes instanceof Winning, yes.winning)
+console.log('won ---')
+
+const chain = new Chain()
+
+chain
+  .extend(['eh'])
+  .observe('e*', data => Object.keys(data).map(key => console.log(key, data[key])))
+
+chain.eh('yay!')
+
+// only once
+chain.eh('same')
+chain.eh('same')
+chain.eh('same')
+chain.eh('same')
+chain.eh('same')
+`
+
 const AppStore = t.model(
   {
     code: t.string,
@@ -201,7 +265,18 @@ const AppStore = t.model(
     setCode(code) {
       this.code = code
     },
-
+    showExample(name) {
+      if (name === 'merge') {
+        this.setCode(MERGE_CODE)
+      } else if (name === 'ls') {
+        this.setCode(LS_CODE)
+      } else if (name === 'observe') {
+        this.setCode(OBSERVE_CODE)
+      } else if (name === 'schema') {
+        this.setCode(SCHEMA_CODE)
+      }
+      return true
+    },
     setPreviewMode(mode) {
       this.currentPreviewIndex = 0
       this.previewMode = mode

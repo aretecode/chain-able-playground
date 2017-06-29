@@ -7,7 +7,8 @@
     "babel-core": "^6.24.1",
     "babel-standalone": "^6.24.2",
     "babili-standalone": "0.0.10",
-    "chain-able": "4.0.0-beta.1",
+    "chain-able": "beta.2",
+    "fliplog": "^1.0.4",
     "inferno": "^3.6.1",
     "inferno-compat": "^3.6.1",
     "inferno-mobx": "^3.6.1",
@@ -26,8 +27,8 @@
     "webpack": "^3.0.0"
   },
   "scripts": {
-    "dev": "webpack --config webpack/webpack.config.js",
-    "start": "react-scripts start",
+    "dev": "NODE_ENV=development webpack --config webpack/webpack.config.js --verbose",
+    "start": "NODE_ENV=development node webpack/start",
     "build": "react-scripts build:dev",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
